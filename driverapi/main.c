@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     check(cuDeviceGet(&device, 0));
     check(cuDevicePrimaryCtxRetain(&ctx, device));
     check(cuCtxPushCurrent(ctx));
-    check(cuLibraryLoadFromFile(&library, "klib.a", NULL, NULL, 0, NULL, NULL, 0));
+    check(cuLibraryLoadFromFile(&library, "bin/klib.a", NULL, NULL, 0, NULL, NULL, 0));
     check(cuLibraryGetKernel(&kernel, library, name));
     CUlaunchConfig config = {
         .gridDimX = 2,

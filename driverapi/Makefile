@@ -1,15 +1,18 @@
 CC := gcc
 CUDA_DIR := /usr/local/cuda-12.5
-INCLUDE := $(CUDA_DIR)/include
 CCFLAGS := -std=c17 -Wall -I$(CUDA_DIR)/include
+BIN_DIR := bin
 
 .PHONY : clean
 
-launcher : main.c klib.a
+$(BIN_DIR)/launcher : main.c $(BIN_DIR)/klib.a | $(BIN_DIR)
 	$(CC) $(CCFLAGS) -L$(CUDA_DIR)/lib64/stubs $< -o $@ -lcuda
 
-klib.a : *.cu
+$(BIN_DIR)/klib.a : *.cu | $(BIN_DIR)
 	nvcc -arch=native -rdc=true -cubin -dlink $^ -o $@
 
+$(BIN_DIR) :
+	mkdir -p $@
+
 clean :
-	rm -f klib.a launcher
+	rm -rf $(BIN_DIR)
