@@ -126,13 +126,13 @@ BatchGenerator::BatchGenerator(
     rng.seed(rd());
     std::iota(indices.begin(), indices.end(), 0);
 
-    CHECK(cudaMallocHost(&batchImages.ptr, batchImages.allocBytes()));
-    CHECK(cudaMallocHost(&batchLabels.ptr, batchLabels.allocBytes()));
+    CUDA_CHECK(cudaMallocHost(&batchImages.ptr, batchImages.allocBytes()));
+    CUDA_CHECK(cudaMallocHost(&batchLabels.ptr, batchLabels.allocBytes()));
 }
 
 BatchGenerator::~BatchGenerator() {
-    CHECK(cudaFreeHost(batchImages.ptr));
-    CHECK(cudaFreeHost(batchLabels.ptr));
+    CUDA_CHECK(cudaFreeHost(batchImages.ptr));
+    CUDA_CHECK(cudaFreeHost(batchLabels.ptr));
 }
 
 void BatchGenerator::shuffle() {
