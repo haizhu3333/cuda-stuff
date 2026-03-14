@@ -47,7 +47,7 @@ struct Tensor {
 
     template <typename... Args>
     requires IndexArgs<Nd, Args...>
-    T &operator()(Args... args) const {
+    __host__ __device__ T &operator()(Args... args) const {
         return *getAddr(args...);
     }
 
@@ -90,32 +90,32 @@ struct Tensor {
 
 private:
     // Special case for Nd = 0 or 1
-    T *getAddr() const {
+    __host__ __device__ T *getAddr() const {
         static_assert(Nd == 0);
         return ptr;
     }
 
-    T *getAddr(size_t i) const {
+    __host__ __device__ T *getAddr(size_t i) const {
         static_assert(Nd == 1);
         return ptr + i;
     }
 
     // Nd >= 2 is always Pitched, use recursive template.
     template <typename... Args>
-    T *getAddr(size_t i, Args... args) const {
+    __host__ __device__ T *getAddr(size_t i, Args... args) const {
         static_assert(Pitched);
         static_assert(sizeof...(Args) == Nd - 1);
         return pitchedAddrImpl(i, args...);
     }
 
-    T *pitchedAddrImpl(size_t accIndex, size_t i) const {
+    __host__ __device__ T *pitchedAddrImpl(size_t accIndex, size_t i) const {
         Byte *bptr = reinterpret_cast<Byte*>(ptr);
         T *row = reinterpret_cast<T*>(bptr + accIndex * pitch);
         return row + i;
     }
 
     template <typename... Args>
-    T *pitchedAddrImpl(size_t accIndex, size_t i, Args... args) const {
+    __host__ __device__ T *pitchedAddrImpl(size_t accIndex, size_t i, Args... args) const {
         constexpr size_t D = Nd - sizeof...(Args) - 1;
         static_assert(D > 0 && D < Nd - 1);
         return pitchedAddrImpl(accIndex * shape[D] + i, args...);

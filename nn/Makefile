@@ -3,14 +3,21 @@ NVCC := nvcc
 CCFLAGS := -arch=native -isystem $(CUDA_DIR)/include -MMD -res-usage -Xcompiler -Wall -std=c++20
 LDFLAGS := -L$(CUDA_DIR)/lib64
 BIN_DIR := bin
-SRCS := utils.cu data_load.cu main.cu
-OBJS := $(addprefix $(BIN_DIR)/, $(SRCS:.cu=.o))
+
+LIB_SRCS := utils.cu data_load.cu network.cu
+EXE_SRCS := data_load_test.cu network_test.cu
+SRCS := $(LIB_SRCS) $(EXE_SRCS)
+
+LIB_OBJS := $(addprefix $(BIN_DIR)/, $(LIB_SRCS:.cu=.o))
+EXE_OBJS := $(addprefix $(BIN_DIR)/, $(EXE_SRCS:.cu=.o))
 DEPS := $(addprefix $(BIN_DIR)/, $(SRCS:.cu=.d))
-EXE := $(BIN_DIR)/main
+EXES := $(addprefix $(BIN_DIR)/, $(EXE_SRCS:.cu=))
 
-.PHONY : clean
+.PHONY : all clean
 
-$(EXE) : $(OBJS)
+all : $(EXES)
+
+$(EXES) : % : %.o $(LIB_OBJS)
 	$(NVCC) $^ -o $@ $(LDFLAGS)
 
 $(BIN_DIR)/%.o : %.cu | $(BIN_DIR)

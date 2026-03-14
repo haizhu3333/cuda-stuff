@@ -1,9 +1,6 @@
-#include <memory>
 #include <iostream>
-#include <stddef.h>
 #include "data_load.h"
 #include "tensor.h"
-#include "utils.h"
 
 int main() {
     IDXFile<3> imagesFile {"data/mnist/train-images.idx3-ubyte"};
@@ -16,7 +13,7 @@ int main() {
         auto images = bg.getImages();
         auto labels = bg.getLabels();
 
-        for (size_t i = 0; i < bg.batchSize(); i++) {
+        for (unsigned int i = 0; i < bg.batchSize(); i++) {
             int label = labels(i);
             std::cout << i << ": label = " << label << std::endl;
             for (size_t r = 0; r < 28; r++) {
